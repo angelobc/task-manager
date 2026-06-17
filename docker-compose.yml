@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: taskmanager-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-taskmanager}
+      POSTGRES_USER: ${DB_USERNAME:-taskmanager}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-taskmanager}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-taskmanager}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: taskmanager-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-taskmanager}
+      DB_USERNAME: ${DB_USERNAME:-taskmanager}
+      DB_PASSWORD: ${DB_PASSWORD:-taskmanager}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-900000}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-604800000}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    container_name: taskmanager-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:
