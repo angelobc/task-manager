@@ -2,6 +2,15 @@
 
 Aplicación full-stack de gestión de proyectos y tareas, desarrollada como proyecto de portafolio siguiendo un enfoque de **Spec-Driven Development**.
 
+**Demo en vivo:** https://task-manager-frontend-production-108c.up.railway.app
+**API docs (Swagger):** https://task-manager-production-33d9.up.railway.app/swagger-ui.html
+
+## Screenshots
+
+| Login | Proyectos |
+|---|---|
+| ![Login](docs/screenshots/login.png) | ![Proyectos](docs/screenshots/projects.png) |
+
 ## Stack Tecnológico
 
 **Backend**
@@ -23,6 +32,7 @@ Aplicación full-stack de gestión de proyectos y tareas, desarrollada como proy
 
 **Infraestructura**
 - Docker Compose (PostgreSQL, backend, frontend)
+- Desplegado en Railway (backend, frontend y PostgreSQL como servicios independientes)
 
 ## Funcionalidades (MVP)
 
