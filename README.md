@@ -2,8 +2,10 @@
 
 Aplicación full-stack de gestión de proyectos y tareas, desarrollada como proyecto de portafolio siguiendo un enfoque de **Spec-Driven Development**.
 
-**Demo en vivo:** https://task-manager-frontend-production-108c.up.railway.app
-**API docs (Swagger):** https://task-manager-production-33d9.up.railway.app/swagger-ui.html
+**Demo en vivo:** https://task-manager-frontend-4hrn.onrender.com
+**API docs (Swagger):** https://task-manager-backend-ayn3.onrender.com/swagger-ui.html
+
+> Nota: el backend corre en el plan gratuito de Render, que "duerme" tras 15 minutos de inactividad. La primera carga puede tardar unos 30-50 segundos mientras el servidor se reactiva.
 
 ## Screenshots
 
@@ -31,8 +33,8 @@ Aplicación full-stack de gestión de proyectos y tareas, desarrollada como proy
 - Radix UI
 
 **Infraestructura**
-- Docker Compose (PostgreSQL, backend, frontend)
-- Desplegado en Railway (backend, frontend y PostgreSQL como servicios independientes)
+- Docker Compose (PostgreSQL, backend, frontend) para desarrollo local
+- Desplegado en Render (backend como Web Service Docker, frontend como Static Site) y Neon (PostgreSQL serverless)
 
 ## Funcionalidades (MVP)
 
