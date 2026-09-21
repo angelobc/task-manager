@@ -104,6 +104,15 @@ cd backend
 
 Requiere una instancia de PostgreSQL en ejecución con las credenciales indicadas en `.env`.
 
+Para correr los tests:
+
+```bash
+cd backend
+./mvnw test
+```
+
+> El test de integración de autenticación usa Testcontainers y necesita Docker corriendo (levanta un Postgres real y ejecuta las migraciones de Flyway). Los tests unitarios no requieren Docker.
+
 ### Frontend
 
 ```bash
@@ -136,3 +145,6 @@ El estado del servidor (proyectos, tareas) se maneja con TanStack Query, que pro
 
 ### Frontend: Zod + React Hook Form para validación
 La validación se define una sola vez en un schema Zod compartido entre el formulario y TypeScript. React Hook Form minimiza los re-renders durante la edición, lo que mejora la experiencia en formularios con muchos campos.
+
+### Testing: unit tests con Mockito + integración con Testcontainers
+La lógica de negocio y las reglas de autorización (por ejemplo, que un usuario no pueda acceder a proyectos o tareas que no le pertenecen) se cubren con tests unitarios sobre la capa de servicio, sin depender de infraestructura. El flujo completo de autenticación (registro, login, rotación de refresh tokens) se valida con un test de integración que levanta un Postgres real vía Testcontainers y corre las migraciones de Flyway, para detectar problemas que los mocks no verían.
