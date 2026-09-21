@@ -101,4 +101,11 @@ class AuthFlowIntegrationTest {
                         .content(loginBody))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void healthEndpoint_isPubliclyAccessible() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+    }
 }

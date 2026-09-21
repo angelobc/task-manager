@@ -94,6 +94,7 @@ task-manager/
    - Frontend: http://localhost
    - API Backend: http://localhost:8080
    - Swagger UI: http://localhost:8080/swagger-ui.html
+   - Health check: http://localhost:8080/actuator/health
 
 ## Desarrollo Local (sin Docker)
 
