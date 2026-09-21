@@ -114,7 +114,7 @@ cd backend
 ./mvnw test
 ```
 
-> El test de integración de autenticación usa Testcontainers y necesita Docker corriendo (levanta un Postgres real y ejecuta las migraciones de Flyway). Los tests unitarios no requieren Docker.
+> El test de integración de autenticación usa Testcontainers y necesita Docker corriendo (levanta un Postgres real y ejecuta las migraciones de Flyway). Los tests unitarios no requieren Docker. Con Docker Engine 29 o posterior se necesita Testcontainers 1.21.4 o superior (ya fijado en el `pom.xml`); con versiones anteriores el test falla con `BadRequestException 400`.
 
 ### Frontend
 
