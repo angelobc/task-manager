@@ -41,10 +41,7 @@ public class TaskService {
     public TaskResponse createTask(UUID userId, UUID projectId, CreateTaskRequest request) {
         Project project = findAccessibleProjectOrThrow(userId, projectId);
         User creator = findUserOrThrow(userId);
-
-        User assignee = request.assigneeId() != null
-                ? findUserOrThrow(request.assigneeId())
-                : null;
+        User assignee = resolveAssignee(project, request.assigneeId());
 
         int nextPosition = taskRepository.findMaxPositionByProject(project) + 1;
 
@@ -70,12 +67,9 @@ public class TaskService {
     }
 
     public TaskResponse updateTask(UUID userId, UUID projectId, UUID taskId, UpdateTaskRequest request) {
-        findAccessibleProjectOrThrow(userId, projectId);
+        Project project = findAccessibleProjectOrThrow(userId, projectId);
         Task task = findTaskInProjectOrThrow(taskId, projectId);
-
-        User assignee = request.assigneeId() != null
-                ? findUserOrThrow(request.assigneeId())
-                : null;
+        User assignee = resolveAssignee(project, request.assigneeId());
 
         task.setTitle(request.title());
         task.setDescription(request.description());
@@ -132,5 +126,16 @@ public class TaskService {
     private User findUserOrThrow(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private User resolveAssignee(Project project, UUID assigneeId) {
+        if (assigneeId == null) {
+            return null;
+        }
+        User assignee = findUserOrThrow(assigneeId);
+        if (!assignee.getId().equals(project.getOwner().getId())) {
+            throw new ForbiddenException("Assignee does not have access to this project");
+        }
+        return assignee;
     }
 }

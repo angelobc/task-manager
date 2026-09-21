@@ -6,6 +6,7 @@ import com.taskmanager.project.model.Project;
 import com.taskmanager.project.repository.ProjectRepository;
 import com.taskmanager.task.dto.CreateTaskRequest;
 import com.taskmanager.task.dto.TaskResponse;
+import com.taskmanager.task.dto.UpdateTaskRequest;
 import com.taskmanager.task.mapper.TaskMapper;
 import com.taskmanager.task.model.Task;
 import com.taskmanager.task.model.TaskPriority;
@@ -81,6 +82,55 @@ class TaskServiceTest {
         when(projectRepository.findById(project.getId())).thenReturn(Optional.of(project));
 
         assertThatThrownBy(() -> taskService.createTask(otherUser.getId(), project.getId(), request))
+                .isInstanceOf(ForbiddenException.class);
+
+        verify(taskRepository, never()).saveAndFlush(any());
+    }
+
+    @Test
+    void createTask_allowsAssigningToProjectOwner() {
+        CreateTaskRequest request = new CreateTaskRequest("Design homepage", null, null, null, null, owner.getId());
+        when(projectRepository.findById(project.getId())).thenReturn(Optional.of(project));
+        when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
+        when(taskRepository.findMaxPositionByProject(project)).thenReturn(-1);
+        when(taskRepository.saveAndFlush(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(taskMapper.toResponse(any(Task.class))).thenAnswer(inv -> {
+            Task saved = inv.getArgument(0);
+            return new TaskResponse(saved.getId(), project.getId(), saved.getTitle(), saved.getDescription(),
+                    saved.getStatus(), saved.getPriority(), saved.getDueDate(), saved.getPosition(),
+                    saved.getAssignee().getId(), owner.getId(), null, null);
+        });
+
+        TaskResponse response = taskService.createTask(owner.getId(), project.getId(), request);
+
+        assertThat(response.assigneeId()).isEqualTo(owner.getId());
+    }
+
+    @Test
+    void createTask_throwsForbiddenWhenAssigneeIsNotProjectOwner() {
+        CreateTaskRequest request = new CreateTaskRequest("Design homepage", null, null, null, null, otherUser.getId());
+        when(projectRepository.findById(project.getId())).thenReturn(Optional.of(project));
+        when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+
+        assertThatThrownBy(() -> taskService.createTask(owner.getId(), project.getId(), request))
+                .isInstanceOf(ForbiddenException.class);
+
+        verify(taskRepository, never()).saveAndFlush(any());
+    }
+
+    @Test
+    void updateTask_throwsForbiddenWhenAssigneeIsNotProjectOwner() {
+        UUID taskId = UUID.randomUUID();
+        Task task = Task.builder().id(taskId).project(project).title("Design homepage").build();
+        UpdateTaskRequest request = new UpdateTaskRequest(
+                "Design homepage", null, TaskStatus.TODO, TaskPriority.MEDIUM, null, otherUser.getId());
+
+        when(projectRepository.findById(project.getId())).thenReturn(Optional.of(project));
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+
+        assertThatThrownBy(() -> taskService.updateTask(owner.getId(), project.getId(), taskId, request))
                 .isInstanceOf(ForbiddenException.class);
 
         verify(taskRepository, never()).saveAndFlush(any());
