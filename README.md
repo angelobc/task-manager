@@ -1,5 +1,7 @@
 # Task Manager
 
+[![CI](https://github.com/angelobc/task-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/angelobc/task-manager/actions/workflows/ci.yml)
+
 Aplicación full-stack de gestión de proyectos y tareas, desarrollada como proyecto de portafolio siguiendo un enfoque de **Spec-Driven Development**.
 
 **Demo en vivo:** https://task-manager-frontend-4hrn.onrender.com
